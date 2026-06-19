@@ -1,0 +1,73 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "707bc07547109579c8fd0a3a2d18f8ef",
+    "packages": [
+        {
+            "name": "izumi-kun/lti",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Izumi-kun/LTI-Tool-Provider-Library-PHP.git",
+                "reference": "8933b207ee6d50f2c4dc794b95647b7a806f5e79"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Izumi-kun/LTI-Tool-Provider-Library-PHP/zipball/8933b207ee6d50f2c4dc794b95647b7a806f5e79",
+                "reference": "8933b207ee6d50f2c4dc794b95647b7a806f5e79",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "replace": {
+                "imsglobal/lti": "3.0.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "IMSGlobal\\LTI\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Vickers",
+                    "email": "svickers@imsglobal.org"
+                }
+            ],
+            "description": "LTI Tool Provider Library",
+            "homepage": "https://www.imsglobal.org/lti",
+            "keywords": [
+                "LTI"
+            ],
+            "support": {
+                "issues": "https://github.com/Izumi-kun/LTI-Tool-Provider-Library-PHP/issues",
+                "source": "https://github.com/Izumi-kun/LTI-Tool-Provider-Library-PHP/tree/1.2.1"
+            },
+            "time": "2025-03-31T05:03:30+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.0"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

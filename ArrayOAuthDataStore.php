@@ -19,7 +19,9 @@ class ArrayOAuthDataStore extends OAuthDataStore
 
     function lookup_consumer($consumer_key)
     {
-        if ($this->consumers[$consumer_key]) {
+        // isset() guard avoids an "Undefined array key" warning on PHP 8 when
+        // the key is unknown.
+        if (!empty($this->consumers[$consumer_key])) {
             return new OAuthConsumer($consumer_key, $this->consumers[$consumer_key]);
         }
 

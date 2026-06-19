@@ -4,14 +4,20 @@ This plugin can also be used to return a grade/score/result back to the LMS base
 
 ## Installation
 
-Download the zip from the [releases](https://github.com/adamzammit/LTIPlugin/releases) page and extract to your plugins folder. You can also clone directly from git: go to your plugins directory and type
+Download the zip from the [releases](https://github.com/adamzammit/LTIPlugin/releases) page and extract to your plugins folder. Release packages already include the bundled `vendor/` directory, so no extra step is required.
+
+If you install from a git clone instead, the LTI library is pulled in via Composer (it is no longer a git submodule). Go to your plugins directory and run:
 ```
-git clone --recursive https://github.com/adamzammit/LTIPlugin.git LTIPlugin
+git clone https://github.com/adamzammit/LTIPlugin.git LTIPlugin
+cd LTIPlugin
+composer install --no-dev
 ```
 
 ## Requirements
 
-- LimeSurvey version 3.x, 4.x, 5.x, 6.x
+- LimeSurvey 6.x or 7.x
+- PHP 8.0 or newer
+- [Composer](https://getcomposer.org/) — only needed when installing from a git clone; release packages already bundle the dependencies
 - Surveys need to be activated, with a participant table set up with at least 4 attributes avaiable, 7 attributes if you want to return a grade/result (the plugin will use the first 4 or 7 attributes for LTI related data)
 - If your LTI Provider is running on HTTPS, then LimeSurvey must run over HTTPS also
 
