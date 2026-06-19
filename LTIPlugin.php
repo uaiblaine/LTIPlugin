@@ -22,7 +22,7 @@
  * GNU General Public License for more details.
  */
 
-require_once  __DIR__ . '/LTI-Tool-Provider-Library-PHP/vendor/autoload.php';
+require_once  __DIR__ . '/vendor/autoload.php';
 require_once  __DIR__ . '/ArrayOAuthDataStore.php';
 
 use IMSGlobal\LTI\OAuth\OAuthServer;
@@ -32,9 +32,26 @@ use IMSGlobal\LTI\ToolProvider;
 
 class LTIResourceLink extends ToolProvider\ResourceLink
 {
+    /**
+     * The consumer used to sign the outcome service request.
+     *
+     * The parent ResourceLink::$consumer property is private in
+     * izumi-kun/lti, so it cannot be written from this subclass. We hold our
+     * own lightweight consumer here and override getConsumer() so every
+     * internal call ($this->getConsumer()) resolves to it.
+     *
+     * @var LTIConsumer
+     */
+    private $ltiConsumer;
+
     public function setConsumer($consumer)
     {
-        $this->consumer = $consumer;
+        $this->ltiConsumer = $consumer;
+    }
+
+    public function getConsumer()
+    {
+        return $this->ltiConsumer;
     }
 }
 
@@ -208,7 +225,7 @@ class LTIPlugin extends PluginBase
         }
 
         // Store the return url somewhere if it exists
-        $urlAttribute = $this->get('sUrlAttribute', null, null, $this->settings['sUrlAttribute']);
+        $urlAttribute = $this->get('sUrlAttribute', null, null, $this->settings['sUrlAttribute']['default']);
         $url = (!empty($urlAttribute) && isset($params[$urlAttribute])) ? $params[$urlAttribute] : '';
 
         // If we want to limit completion to one per course/user combination:
@@ -216,18 +233,18 @@ class LTIPlugin extends PluginBase
 
         // Search for token based on attribute_3 and attribute_4 (resource id and user id)
         $tokenQuery = [
-            'attribute_3' => $params[$this->get('sResourceIdAttribute', null, null, $this->settings['sResourceIdAttribute'])],
-            'attribute_4' => $params[$this->get('sUserIdAttribute', null, null, $this->settings['sUserIdAttribute'])]
+            'attribute_3' => $params[$this->get('sResourceIdAttribute', null, null, $this->settings['sResourceIdAttribute']['default'])],
+            'attribute_4' => $params[$this->get('sUserIdAttribute', null, null, $this->settings['sUserIdAttribute']['default'])]
         ];
 
         // Get the current token count
         $tokenCount = $multipleCompletions ? 0 : (int) Token::model($surveyId)->countByAttributes($tokenQuery);
         // If no token, then create a new one and start survey
         if ($multipleCompletions || $tokenCount === 0) {
-            $firstname = $params[$this->get('sFirstNameAttribute', null, null, $this->settings['sFirstNameAttribute'])] ?? '';
-            $lastname = $params[$this->get('sLastNameAttribute', null, null, $this->settings['sLastNameAttribute'])] ?? '';
-            $email = $params[$this->get('sEmailAttribute', null, null, $this->settings['sEmailAttribute'])] ?? '';
-            $attribute2 = $params[$this->get('sCourseTitleAttribute', null, null, $this->settings['sCourseTitleAttribute'])] ?? '';
+            $firstname = $params[$this->get('sFirstNameAttribute', null, null, $this->settings['sFirstNameAttribute']['default'])] ?? '';
+            $lastname = $params[$this->get('sLastNameAttribute', null, null, $this->settings['sLastNameAttribute']['default'])] ?? '';
+            $email = $params[$this->get('sEmailAttribute', null, null, $this->settings['sEmailAttribute']['default'])] ?? '';
+            $attribute2 = $params[$this->get('sCourseTitleAttribute', null, null, $this->settings['sCourseTitleAttribute']['default'])] ?? '';
             $tokenAdd = [
                 'attribute_1' => $url,
                 'attribute_2' => $attribute2,
@@ -238,8 +255,8 @@ class LTIPlugin extends PluginBase
             $tokenReturn = [];
             if (!empty($this->get('sReturnExpression', 'Survey', $surveyId))) {
                 $tokenReturn = [
-                'attribute_5' => $params[$this->get('sResultSourceAttribute', null, null, $this->settings['sResultSourceAttribute'])] ?? '',
-                'attribute_6' => $params[$this->get('sOutcomeServiceURLAttribute', null, null, $this->settings['sOutcomeServiceURLAttribute'])] ?? ''
+                'attribute_5' => $params[$this->get('sResultSourceAttribute', null, null, $this->settings['sResultSourceAttribute']['default'])] ?? '',
+                'attribute_6' => $params[$this->get('sOutcomeServiceURLAttribute', null, null, $this->settings['sOutcomeServiceURLAttribute']['default'])] ?? ''
                 ];
             }
             $token = Token::create($surveyId);
@@ -427,7 +444,8 @@ class LTIPlugin extends PluginBase
     private function handleRequest($secret)
     {
         // If this request is not an LTI Launch, give up
-        if (($_REQUEST['lti_message_type'] !== 'basic-lti-launch-request') || ($_REQUEST['lti_version'] !== 'LTI-1p0')) {
+        // Use null coalescing so missing keys do not raise "Undefined array key" warnings on PHP 8
+        if ((($_REQUEST['lti_message_type'] ?? null) !== 'basic-lti-launch-request') || (($_REQUEST['lti_version'] ?? null) !== 'LTI-1p0')) {
             throw new Exception('Not a valid LTI launch request');
         }
 
@@ -467,7 +485,7 @@ class LTIPlugin extends PluginBase
 
     private function debug($parameters, $hookSent, $timeStart)
     {
-        if ($this->get('bDebugMode', null, null, $this->settings['bDebugMode'])) {
+        if ($this->get('bDebugMode', null, null, $this->settings['bDebugMode']['default'])) {
             echo '<pre>';
             var_dump($parameters);
             echo '<br><br> ----------------------------- <br><br>';
